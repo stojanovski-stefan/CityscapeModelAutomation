@@ -1,0 +1,13 @@
+# One city per line. Accepted forms:
+#   Name, ST      -- USPS state code required (names repeat across states)
+#   GEOID         -- 7-digit Census place id, unambiguous
+#
+# Ambiguous entries are reported with their candidate GEOIDs and skipped,
+# never guessed.
+
+# Oxford, OH
+# Cincinnati, OH
+# Dayton, OH
+
+San Francisco, CA
+
