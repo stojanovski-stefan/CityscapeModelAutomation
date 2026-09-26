@@ -40,6 +40,7 @@
 
 #include "ArgParser.h"
 #include "Config.hpp"
+#include "CityDataMiner.hpp"
 #include <cstdlib>
 
 int main(int argc, char *argv[]) {
@@ -57,9 +58,11 @@ int main(int argc, char *argv[]) {
   ArgParser ap(argList, "CityscapeAutomation");
   ap.parseArguments(argc, argv);
 
-  config::Config cfg{};
+  config::Values cfg{};
   if (!configFilePath.empty())
     cfg = config::loadConfigFile(configFilePath);
+
+  CityDataMiner dataMiner(cityFilePath, cfg);
 
   return EXIT_SUCCESS;
 }

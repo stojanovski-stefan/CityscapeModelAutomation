@@ -55,12 +55,12 @@
  * \param[in] filePath path to the config file.
  * \return    Config object with updated values.
  */
-config::Config config::loadConfigFile(const std::string &filePath) {
+config::Values config::loadConfigFile(const std::string &filePath) {
   // at this point in the program, we assume a config file was given through
   // command line args
   assert(!filePath.empty());
 
-  Config cfg{}; // already has default values
+  Values cfg{}; // already has default values
   auto configSetting = getConfigFileValues(filePath);
 
   // could not open given file path
@@ -90,10 +90,10 @@ config::Config config::loadConfigFile(const std::string &filePath) {
   };
 
   /**
-   * Lambda function that updates a single integer field in the Config struct.
+   * Lambda function that updates a single integer field in the Values struct.
    *
    * \param[in]  key expected to be in the config file.
-   * \param[out] field reference to member variable in Config struct to be
+   * \param[out] field reference to member variable in Values struct to be
    *             updated.
    * \return nothing
    */
@@ -128,21 +128,25 @@ config::Config config::loadConfigFile(const std::string &filePath) {
     }
   };
 
+  // update default values
   getInt("tiger_year", cfg.tigerYear);
   getInt("gaz_year", cfg.gazYear);
   getInt("pums_year", cfg.pumsYear);
-  getStr("pums_span", cfg.pumsSpan);
   getStr("output_dir", cfg.outputDir);
   getStr("user_agent", cfg.userAgent);
   getStr("census", cfg.census);
   getStr("geofabrik", cfg.geofabrik);
 
-  if (cfg.pumsSpan != "5-Year" && cfg.pumsSpan != "1-Year") {
-    std::println(
-        stderr,
-        "Ivalid pums_span value in config: {} (expected 5-Year or 1-Year)",
-        cfg.pumsSpan);
-    std::exit(EXIT_FAILURE);
+  // if pums span value not one of the 2 options, keep default
+  if (configMap.find("pums_span") != configMap.end() &&
+      ("5-Year" == configMap.at("pums_span") ||
+       "1-Year" == configMap.at("pums_span"))) {
+    getStr("pums_span", cfg.pumsSpan);
+  } else {
+    std::println(stderr,
+                 "Ivalid pums_span value in config: {} (expected 5-Year or "
+                 "1-Year). Keeping default.",
+                 configMap.at("pums_span"));
   }
 
   return cfg;

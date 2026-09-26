@@ -52,7 +52,7 @@
 
 namespace config {
 
-struct Config {
+struct Values {
   std::string outputDir{"./cityscape_data"};
   std::string userAgent{"cityscape-automation/1.0 (stojansz@miamioh.edu)"};
   std::string census{"https://www2.census.gov"};
@@ -76,6 +76,9 @@ using ConfigFileValues = std::unordered_map<std::string, std::string>;
 
 /**
  * Remove any beginning or trailing whitespace in a line.
+ *
+ * TODO:: refactor to use std::erase_if - should be no spaces at all
+ * inside config file lines, rename to trimAll()
  *
  * \param[in] s string to be trimmed.
  * \return    string with no whitespaces
@@ -152,7 +155,7 @@ getConfigFileValues(const std::string &filePath) {
  * \param[in] filePath path to the config file.
  * \return    Config object with updated values.
  */
-Config loadConfigFile(const std::string &filePath);
+Values loadConfigFile(const std::string &filePath);
 
 } // namespace config
 
