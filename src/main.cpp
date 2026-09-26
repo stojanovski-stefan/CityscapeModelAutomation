@@ -51,7 +51,8 @@ int main(int argc, char *argv[]) {
        "read cities from file, one city per line ('#' comments available)",
        &cityFilePath, ArgParser::STRING},
       {"--config", "configuration txt file that changes default preferences",
-       &configFilePath, ArgParser::STRING}};
+       &configFilePath, ArgParser::STRING},
+      {"", "", NULL, ArgParser::INVALID}};
 
   ArgParser ap(argList, "CityscapeAutomation");
   ap.parseArguments(argc, argv);

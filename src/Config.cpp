@@ -40,6 +40,7 @@
 
 #include "Config.hpp"
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <exception>
@@ -88,15 +89,37 @@ config::Config config::loadConfigFile(const std::string &filePath) {
                    key);
   };
 
+  /**
+   * Lambda function that updates a single integer field in the Config struct.
+   *
+   * \param[in]  key expected to be in the config file.
+   * \param[out] field reference to member variable in Config struct to be
+   *             updated.
+   * \return nothing
+   */
   auto getInt = [&](const std::string &key, uint16_t &field) {
     auto iter = configMap.find(key);
     if (iter != configMap.end()) {
       try {
-        std::stoi(configMap.at(key));
+        // track how much was consumed so trailing junk ("2025x") is rejected
+        std::size_t parsedChars{};
+        const int value{std::stoi(iter->second, &parsedChars)};
+
+        if (parsedChars != iter->second.size())
+          std::println(stderr,
+                       "Warning: invalid integer for {}: {}. Keeping default.",
+                       key, iter->second);
+        else if (value < 0 || value > UINT16_MAX)
+          std::println(
+              stderr,
+              "Warning: out of range integer for {}: {}. Keeping default.", key,
+              iter->second);
+        else
+          field = static_cast<uint16_t>(value);
       } catch (const std::exception &) {
         std::println(stderr,
                      "Warning: invalid integer for {}: {}. Keeping default.",
-                     key, configMap.at(key));
+                     key, iter->second);
       }
     } else {
       // user may have only wanted to change a subset of config fields
